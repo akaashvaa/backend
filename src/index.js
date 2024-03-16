@@ -3,22 +3,20 @@ import dotenv from 'dotenv'
 import mongoose from 'mongoose'
 import chalk from 'chalk'
 
-dotenv.config({
-  path: './env',
-})
-
+dotenv.config()
+console.log(process.env.CLOUDINARY_SECRET_KEY)
 const port = process.env.PORT || 8000
 
-const greenLog = chalk.yellow.bold
+const yellowLog = chalk.yellow.bold
 
 mongoose
   .connect(process.env.MONGODB_URI)
   .then(() => {
-    console.log(greenLog('\nMongo DB Connected'))
+    console.log(yellowLog('\nMongo DB Connected'))
     app.listen(port, () => {
       console.log(
-        greenLog(
-          `app is listening to ${port} at ${new Date().toLocaleString()} \n`
+        yellowLog(
+          `app is listening to ${port} at ${new Date().toLocaleTimeString()} \n`
         )
       )
     })

@@ -1,5 +1,5 @@
 class ResponseHandler {
-  contructor(statusCode, data, msg = ' Success') {
+  contructor(statusCode, data, msg = 'Success') {
     this.statusCode = statusCode
     this.data = data
     this.msg = msg
