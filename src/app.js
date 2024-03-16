@@ -16,11 +16,13 @@ app.use(express.urlencoded({ extended: true }))
 app.use(express.static('public'))
 app.use(cookieParser())
 
+//route declaration
 import userRouter from './routes/user.routes.js'
 
 app.use('/api/v1/users', userRouter)
 
-app.get('/', (req, res) => {
+//check
+app.get('/', (_, res) => {
   res.status(200).json({
     message: 'api is working',
   })

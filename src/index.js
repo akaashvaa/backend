@@ -9,14 +9,18 @@ dotenv.config({
 
 const port = process.env.PORT || 8000
 
-const greenLog = chalk.yellow
+const greenLog = chalk.yellow.bold
 
 mongoose
   .connect(process.env.MONGODB_URI)
   .then(() => {
     console.log(greenLog('\nMongo DB Connected'))
     app.listen(port, () => {
-      console.log(greenLog(`app is listening to ${port} at ${new Date()} \n`))
+      console.log(
+        greenLog(
+          `app is listening to ${port} at ${new Date().toLocaleString()} \n`
+        )
+      )
     })
   })
   .catch((err) => console.error("cann't start the app ", err))
