@@ -3,7 +3,8 @@ import { ErrorHandler } from '../utils/errorHandler.js'
 import { User } from '../models/user.model.js'
 import { uploadOnCloudaniry } from '../utils/cloudinary.js'
 import { ResponseHandler } from '../utils/responseHandler.js'
-
+import { generateAccessAndRefreshToken } from '../utils/accessAndRefreshToken.js'
+import { SchemaTypeOptions } from 'mongoose'
 const registerUser = asyncHandler(async (req, res, next) => {
   const { fullName, email, userName, password } = req.body
 
@@ -52,4 +53,52 @@ const registerUser = asyncHandler(async (req, res, next) => {
     .json(new ResponseHandler(200, createduser, 'user registered successfully'))
 })
 
-export { registerUser }
+const loginUser = asyncHandler(async (req, res, next) => {
+  /**
+   * req.body se input
+   * user exist or not
+   * validation
+   * password check
+   * access and refresh token
+   * send cookie
+   * res.json
+   */
+  const { userName, email, password } = req.body
+  if (!userName && !email) {
+    throw new ErrorHandler(400, 'username or email is required')
+  }
+  const user = await User.findOne({ $or: [{ userName }, { email }] })
+
+  if (!user) throw new ErrorHandler(404, 'User Not Found')
+  await user.isPasswordCorrect(password)
+  if (!password) throw new ErrorHandler(401, 'Password Incorrect')
+
+  const { accessToken, refreshToken } = await generateAccessAndRefreshToken(
+    user._id
+  )
+  const loggedInUser = await User.findById(user._id).select(
+    '-password -refreshToken'
+  )
+
+  const option = {
+    httpOnly: true,
+    secure: true,
+  }
+  return res
+    .status(200)
+    .cookie('accessToken', accessToken, option)
+    .cookie('refreshToken', refreshToken, option)
+    .json(
+      new ResponseHandler(
+        200,
+        {
+          user: loggedInUser,
+          accessToken,
+          refreshToken,
+        },
+        'User Logged In Successfully'
+      )
+    )
+})
+
+export { registerUser, loginUser }
