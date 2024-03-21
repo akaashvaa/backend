@@ -26,6 +26,9 @@ dependencies:
   express:
     specifier: ^4.18.2
     version: 4.18.2
+  githelper125:
+    specifier: ^1.0.0
+    version: 1.0.0
   jsonwebtoken:
     specifier: ^9.0.2
     version: 9.0.2
@@ -545,6 +548,10 @@ packages:
       has-proto: 1.0.3
       has-symbols: 1.0.3
       hasown: 2.0.1
+    dev: false
+
+  /githelper125@1.0.0:
+    resolution: {integrity: sha512-BHfTpzg6wCLJyOXs0rNJVq4N/ul3pSdFuoCxKDTzaYhPzUWJNPezCxcX9P1yLSDma5qjtVx16vykWbNl6zu2qQ==}
     dev: false
 
   /glob-parent@5.1.2:
