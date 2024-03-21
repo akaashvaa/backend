@@ -1,24 +1,24 @@
-import { User } from '../models/user.model'
-import { ErrorHandler } from './errorHandler'
+import { User } from "../models/user.model.js";
+import { ErrorHandler } from "./errorHandler.js";
 
 const generateAccessAndRefreshToken = async (userId) => {
   try {
-    const user = await User.findById(userId)
+    const user = await User.findById(userId);
 
-    const accessToken = user.generateAccessToken()
+    const accessToken = user.generateAccessToken();
 
-    const refreshToken = user.generateRefreshToken()
+    const refreshToken = user.generateRefreshToken();
 
-    user.refreshToken = refreshToken
-    user.save({ ValidateBeforeSave: false })
+    user.refreshToken = refreshToken;
+    user.save({ ValidateBeforeSave: false });
 
-    return { accessToken, refreshToken }
+    return { accessToken, refreshToken };
   } catch (error) {
     throw new ErrorHandler(
       500,
-      'something went wrong while generating access and refresh token'
-    )
+      "something went wrong while generating access and refresh token"
+    );
   }
-}
+};
 
-export { generateAccessAndRefreshToken }
+export { generateAccessAndRefreshToken };
