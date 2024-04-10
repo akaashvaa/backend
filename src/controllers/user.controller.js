@@ -162,4 +162,79 @@ const refreshedAccessToken = asyncHandler(async (req, res) => {
     );
 });
 
-export { registerUser, loginUser, logoutUser, refreshedAccessToken };
+const changeCurrentPassword = asyncHandler(async (req, res) => {
+  const { oldPassword, newPassword } = req.body;
+  const user = await User.findById(req.user?._id);
+  const isPasswordCorrect = await user.isPasswordCorrect(oldPassword);
+
+  if (!isPasswordCorrect)
+    throw new ErrorHandler(400, "Password Does not matched ! Please Try Again");
+
+  user.password = newPassword;
+  await user.save({ validateBeforeSave: false }); // saving it using pre method
+
+  return res
+    .status(200)
+    .json(new ResponseHandler(200, {}, "password chnaged successfully"));
+});
+
+const getCurrentUser = asyncHandler((req,res) => {
+  return res.status(200).json( new ResponseHandler(200, req.user, "current user fetched successfully"))
+})
+
+const updateAccountDetails = asyncHandler( async(req,res) => {
+  const {fullName, email}  = req.body 
+  if(!fullName || !email){
+    throw new ErrorHandler(400, "All fields are required")
+  }
+  const user = await User.findByIdAndUpdate(req.user?._id, {
+    $set : {
+      fullName, email
+    }, {new :true}
+  }).select("--password")
+
+  if(!user) throw new ErrorHandler(400, "Unauthorized Error while updating account details")
+
+  return res.status(200).json(new ResponseHandler(200, user, "Account details updated successfully")
+  )
+ }) 
+
+ const updateUserAvatar = asyncHandler( async(req,res) => {
+   const avatarLocalPath = req.files?.path
+   
+   
+   if(!avatarLocalPath) {
+   throw new ErrorHandler(400, "avatar is missing")
+   }
+   const avatar = await uploadOnCloudaniry(avatarLocalPath)
+   
+   if(!avatar.url) {
+   throw new ErrorHandler(400, "error while uploading avatar")
+   }
+   const user = await User.findByIdAndUpdate(req.user?._id , {
+    $set: { avatar : avatar.url }
+   }, {new : true}).select("--password")
+
+   return res.status(200).json(new ResponseHandler(200, user , "avatar updated successfuly"))
+ })
+
+ const updateUserCoverImage = asyncHandler( async(req,res) => {
+   const coverLocalPath = req.files?.path
+   
+   
+   if(!coverLocalPath) {
+   throw new ErrorHandler(400, "cover image is missing")
+   }
+   const coverImage = await uploadOnCloudaniry(coverLocalPath)
+   
+   if(!coverImage.url) {
+   throw new ErrorHandler(400, "error while uploading avatar")
+   }
+   const user = await User.findByIdAndUpdate(req.user?._id , {
+    $set: { coverImage : coverImage.url }
+   }, {new : true}).select("--password")
+
+   return res.status(200).json(new ResponseHandler(200, user , "cover image updated successfuly"))
+ })
+
+export { registerUser, loginUser, logoutUser, refreshedAccessToken, changeCurrentPassword, getCurrentUser, updateAccountDetails };

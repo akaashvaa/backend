@@ -1,6 +1,7 @@
-import mongoose, { Schema } from 'mongoose'
-import bcrypt from 'bcrypt'
-import jwt from 'jsonwebtoken'
+import mongoose, { Schema } from "mongoose";
+import bcrypt from "bcrypt";
+import jwt from "jsonwebtoken";
+
 const userSchema = new Schema(
   {
     userName: {
@@ -26,14 +27,14 @@ const userSchema = new Schema(
     },
     avatar: {
       type: String,
-      required: [true, 'avatar is required'],
+      required: [true, "avatar is required"],
     },
     coverImage: {
       type: String,
     },
     password: {
       type: String,
-      required: [true, 'password is required'],
+      required: [true, "password is required"],
     },
     refreshToken: {
       type: String,
@@ -41,23 +42,23 @@ const userSchema = new Schema(
     watchHistory: [
       {
         type: Schema.Types.ObjectId,
-        ref: 'Video',
+        ref: "Video",
       },
     ],
   },
   { timestamps: true }
-)
+);
 
-userSchema.pre('save', async function (next) {
-  if (!this.isModified('password')) return next()
+userSchema.pre("save", async function (next) {
+  if (!this.isModified("password")) return next();
 
-  this.password = await bcrypt.hash(this.password, 10)
-  next()
-})
+  this.password = await bcrypt.hash(this.password, 10);
+  next();
+});
 
 userSchema.methods.isPasswordCorrect = async function (password) {
-  return await bcrypt.compare(password, this.password)
-}
+  return await bcrypt.compare(password, this.password);
+};
 
 userSchema.methods.generateAccessToken = function () {
   jwt.sign(
@@ -71,8 +72,8 @@ userSchema.methods.generateAccessToken = function () {
     {
       expiresIn: process.env.ACCESSS_TOKEN_EXPIRY,
     }
-  )
-}
+  );
+};
 
 userSchema.methods.generateRefreshToken = function () {
   return jwt.sign(
@@ -83,7 +84,7 @@ userSchema.methods.generateRefreshToken = function () {
     {
       expiresIn: process.env.REFRESH_TOKEN_EXPIRY,
     }
-  )
-}
+  );
+};
 
-export const User = mongoose.model('User', userSchema)
+export const User = mongoose.model("User", userSchema);
